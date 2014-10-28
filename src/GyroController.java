@@ -10,13 +10,13 @@ public class GyroController {
 	NXTMotor motor;
 	
 	//Feste Werte des Controllers
-	private final double maxAngleVelocity = 60.0; //maximale Winkelgeschwindigkeit, bis zu der wir regulieren
+	private final double maxAngle = 20.0; //maximale Winkelgeschwindigkeit, bis zu der wir regulieren
 	private final double maxMotorSpeed = 50.0; //Power des Motors bei maximaler Winkeländerung //TODO Werte anpassen
-	private final double Kp = maxMotorSpeed/maxAngleVelocity; //TODO ergibt sich rechnerisch, Verwendung in setMotion()!
+	private final double Kp = maxMotorSpeed/maxAngle; //TODO ergibt sich rechnerisch, Verwendung in setMotion()!
 	private final double Ki = 0.0;
 	private final double Kd = 0.0;
 	
-	double angleVelocity;
+	double angle;
 	
 	/**
 	 * Constructor
@@ -37,33 +37,33 @@ public class GyroController {
 	}
 	
 	/**
-	 * @return Momentane Winkelgeschwinigkeitl des Gyros
+	 * @return Momentaner Winkel des Gyros
 	 */
-	public float getAngleVelocity(){
+	public float getAngle(){
 		float[] angle = new float[1];
-		sensor.getRateMode().fetchSample(angle, 0); //hier wird die aktuelle Winkelgeschwinigkeit ausgelesen
+		sensor.getAngleMode().fetchSample(angle, 0); //hier wird der Winkel ausgelesen
 		return angle[0];
 	}
 	/**
 	 * Diese Methode korrigiert den Winkel des Eihalters, so dass er möglichst gerade bleibt
 	 * 
-	 * @param angle Momentane Winkelgeschwinigkeit des Gyrosensors
+	 * @param angle Momentaner Winkel des Gyrosensors
 	 */
-	public void setMotion(float angle){
+	public void setMotion(float currAngle){
 		int newPower;
 		
 		motor.flt(); //weiß ned, ob man das braucht
-		angleVelocity = (double) this.getAngleVelocity();
+		angle = (double) currAngle;
 		
-		if(angleVelocity < 0.0){ //TODO je nachdem wierum der Sensor angebracht ist, müssen das noch ändern (>)
+		if(angle < 0.0){ //TODO je nachdem wierum der Sensor angebracht ist, müssen das noch ändern (>)
 			motor.backward();
-			angleVelocity = -angleVelocity;
+			angle = -angle;
 		} else{
 			motor.forward();
 		}
 		
-		angleVelocity = Math.max(angleVelocity, maxAngleVelocity); //So das wir nicht über unseren maximalen Steuerungsbereich hinauskommen
-		newPower = (int)(Kp*angleVelocity);
+		angle = Math.max(angle, maxAngle); //So das wir nicht über unseren maximalen Steuerungsbereich hinauskommen
+		newPower = (int)(Kp*angle);
 		motor.setPower(newPower);
 	}
 }
