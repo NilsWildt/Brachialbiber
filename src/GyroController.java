@@ -15,9 +15,9 @@ public class GyroController {
 	private final double MAX_MOTOR_SPEED_I = 10.0; //Maximale Power, die zusätzlich noch vom Integralteil kommt
 	private final double MAX_MOTOR_SPEED_D = 10.0; //Maximale Power, die zusätzlich noch vom Derivativeteil kommt
 	private final double I_FACTOR = 2.0/3.0; //Für ein vergessendes Integral (gibt den Bruchteil des Integrals an den wir behalten)
-	private final double Kp = MAX_MOTOR_SPEED_P/MAX_ANGLE_VELOCITY; //ergibt sich rechnerisch, Verwendung in setMotion()!
-	private final double Ki = (1-I_FACTOR)*MAX_MOTOR_SPEED_I/MAX_ANGLE_VELOCITY; //sollten wir I_FACTOR nicht übernehmen, müssen wir diese Formel ändern!
-	private final double Kd = MAX_MOTOR_SPEED_D/(2*MAX_ANGLE_VELOCITY);
+	private final double Kp = MAX_MOTOR_SPEED_P / MAX_ANGLE_VELOCITY; //ergibt sich rechnerisch, Verwendung in setMotion()!
+	private final double Ki = (1 - I_FACTOR) * MAX_MOTOR_SPEED_I / MAX_ANGLE_VELOCITY; //sollten wir I_FACTOR nicht übernehmen, müssen wir diese Formel ändern!
+	private final double Kd = MAX_MOTOR_SPEED_D / (2 * MAX_ANGLE_VELOCITY);
 	
 	double angleVelocity = 0;
 	double integralAngle = 0;
@@ -83,14 +83,5 @@ public class GyroController {
 		motor.setPower(newPower);
 		
 		lastAngleVelocity = angleVelocity; //Merkt sich den letzen Error für den Derivative-Part
-	}
-	
-	public static void main(String[] args){
-		double value = 0;
-		double angle = 60.0;
-		for(int i=0; i<=100; i++){
-			value = (2.0/3.0)*value + angle;
-		}
-		System.out.println(Math.round(value));
 	}
 }
