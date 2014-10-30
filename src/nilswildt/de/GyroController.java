@@ -57,7 +57,7 @@ public class GyroController {
 		for(int i=0;i<=2;i++){
 			sensor.getRateMode().fetchSample(angleVelocity, i); //hier wird der Winkel ausgelesen
 		}
-		angleVelocity[0] = (angleVelocity[0]	+angleVelocity[1]+angleVelocity[2])/3f;
+		angleVelocity[0] = (angleVelocity[0]	+angleVelocity[1]	+angleVelocity[2]	)/3;
 		//System.out.println(angleVelocity[0]);
 		return  (angleVelocity[0]);
 	}
