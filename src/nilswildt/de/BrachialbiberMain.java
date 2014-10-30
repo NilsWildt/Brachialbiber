@@ -10,10 +10,10 @@ public class BrachialbiberMain {
 	public static void main(String[] args) {
 		Brachialbiber biber = new Brachialbiber(SensorPort.S1, SensorPort.S2,
 				MotorPort.B);
-		// biber.initialize();
-		// biber.view();
 		Sound.beep();
-		biber.gyCo.initalize();
+		Brachialbiber.printer("Press any key to continue");
+		Button.waitForAnyPress();
+		biber.gyCo.initalizeGyroController();
 		while (Button.ESCAPE.isUp()) {
 			biber.gyCo.setMotion();
 		}
