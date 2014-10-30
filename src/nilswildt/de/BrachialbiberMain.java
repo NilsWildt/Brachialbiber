@@ -14,7 +14,10 @@ public class BrachialbiberMain {
 		Brachialbiber.printer("Press any key to continue");
 		Button.waitForAnyPress();
 		biber.gyCo.initalizeGyroController();
+		biber.lineCo.initializeLineController();
 		while (Button.ESCAPE.isUp()) {
+			biber.lineCo.startMotor();
+			biber.lineCo.drive();
 			biber.gyCo.setMotion();
 		}
 	}
