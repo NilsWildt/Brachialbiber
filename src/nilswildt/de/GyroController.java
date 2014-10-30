@@ -10,9 +10,8 @@ public class GyroController {
 	NXTMotor motor;
 	
 	//Feste Werte des Controllers
-	private final double MAX_ANGLE_VELOCITY = 20.0; //maximale Winkelgeschwindigkeit, bis zu der wir regulieren
-	private final double MAX_MOTOR_SPEED_P = 105.0; //Power des Motors bei maximaler Winkeländerung //TODO Werte anpassen
-	private final double Kp = MAX_MOTOR_SPEED_P / MAX_ANGLE_VELOCITY; //ergibt sich rechnerisch, Verwendung in setMotion()!
+	private final double Kp = 5.25; //ergibt sich empirisch, Verwendung in setMotion()!
+	private final double BLOCK_DOWN = -0.6;
 	
 	private int newPower = 0; // from setMotion
 	
@@ -51,19 +50,19 @@ public class GyroController {
 
 	}
 	/**
-	 * Diese Methode korrigiert den Winkel des Eihalters, so dass er m�glichst gerade bleibt
+	 * Diese Methode korrigiert den Winkel des Eihalters, so dass er möglichst gerade bleibt
 	 * 
 	 * @param angle Momentane Winkelgeschwindigkeit des Gyrosensors
 	 */
 	public void setMotion(){		
-		//motor.flt(); //wei� ned, ob man das braucht
+		//motor.flt(); //weiß ned, ob man das braucht
 		//motor.setPower(newPower/6); //TODO
 		
 		angleVelocity = (double) getAngleVelocity();
 		System.out.println(Math.signum(angleVelocity));
-		if(angleVelocity < 0.0){ //TODO je nachdem wieherum der Sensor angebracht ist, m�ssen das noch ändern (>)
+		if(angleVelocity < 0.0){ //TODO je nachdem wieherum der Sensor angebracht ist, müssen das noch Ã¤ndern (>)
 			motor.backward();
-			angleVelocity = -0.6*angleVelocity;
+			angleVelocity = BLOCK_DOWN*angleVelocity;
 		} else{
 			motor.forward();
 		}
