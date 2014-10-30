@@ -44,19 +44,10 @@ public class GyroController {
 	 * @return Momentane Winkelgeschwindigkeit des Gyros
 	 * TODO Filter? Median? Mittelwert?
 	 */
-	public float getAngleVelocity(){
-
+	public float getAngleVelocity() {
 		float[] angleVelocity = new float[1];
 		sensor.getRateMode().fetchSample(angleVelocity, 0);
 		return  angleVelocity[0];
-
-		float[] angleVelocity = new float[3];
-		for(int i=0;i<=2;i++){
-			sensor.getRateMode().fetchSample(angleVelocity, i); //hier wird der Winkel ausgelesen
-		}
-		angleVelocity[0] = (angleVelocity[0]	+angleVelocity[1]	+angleVelocity[2]	)/3;
-		//System.out.println(angleVelocity[0]);
-		return  (angleVelocity[0]);
 
 	}
 	/**
