@@ -21,6 +21,10 @@ public class Brachialbiber {
 	private float brightValue;
 	private float darkValue;
 
+	private int SCREENWIDTH = 17;
+	private int SCREENHIGHT = 7;
+	
+	
 	/**
 	 * Contructor
 	 * 
@@ -38,6 +42,35 @@ public class Brachialbiber {
 		// rgbMode = colSensor.getRGBMode();
 		colorSensorSample = new float[redMode.sampleSize()];
 	}
+	
+	/**
+	 * Druckt eine Text passend auf das Display 
+	 * 
+	 * @param text  Text, der ausgedruckt werden soll
+	 */
+	public void printer(String text){
+		String[] output = text.split(" ");
+		int n = output.length;
+		int currSplit = 0;
+		int Xpos = 0;
+		int leftSpace = SCREENWIDTH;
+		for(int i=0; i<SCREENHIGHT && currSplit != n; i++){
+			LCD.drawString(output[currSplit], Xpos, i);
+			Xpos += output[currSplit].length() + 1;
+			currSplit++;
+			while(currSplit != n && Xpos + output[currSplit].length() <= SCREENWIDTH){
+				LCD.drawString(output[currSplit], Xpos, i);
+				Xpos += output[currSplit].length() + 1;
+				currSplit++; 
+			}
+			System.out.println();
+			Xpos = 0;
+		}
+	}
+
+
+
+
 
 	/**
 	 * Calibrate the ColorSensor
