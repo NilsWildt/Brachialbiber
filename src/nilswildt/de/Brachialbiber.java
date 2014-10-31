@@ -1,9 +1,5 @@
 package nilswildt.de;
 
-import javax.sound.sampled.Line;
-
-import lejos.hardware.Button;
-import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTMotor;
@@ -55,7 +51,7 @@ public class Brachialbiber {
 		int n = output.length;
 		int currSplit = 0;
 		int Xpos = 0;
-		int leftSpace = SCREENWIDTH;
+
 		for (int i = 0; i < SCREENHIGHT && currSplit != n; i++) {
 			LCD.drawString(output[currSplit], Xpos, i);
 			Xpos += output[currSplit].length() + 1;

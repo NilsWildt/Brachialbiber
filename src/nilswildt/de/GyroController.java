@@ -1,7 +1,10 @@
 package nilswildt.de;
 
+import lejos.hardware.Sound;
+import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.utility.Delay;
 
 public class GyroController {
 
@@ -29,6 +32,8 @@ public class GyroController {
 	 */
 	public void initalizeGyroController() {
 		Brachialbiber.printer("Gyrosenesor wird initialisiert.");
+		Delay.msDelay(500);
+		LCD.clear();
 		sensor.reset(); // Das is iwie n bissl unsave, es setzt den Gyro in Mode 4, aber ich hab kein Plan, was der
 						// macht.
 		// TODO rausfinden, was das tut
@@ -42,7 +47,6 @@ public class GyroController {
 		float[] angleVelocity = new float[1];
 		sensor.getRateMode().fetchSample(angleVelocity, 0);
 		return angleVelocity[0];
-
 	}
 
 	/**
@@ -53,7 +57,7 @@ public class GyroController {
 	 */
 	public void setMotion() {
 		angleVelocity = (double) getAngleVelocity();
-		System.out.println(Math.signum(angleVelocity));
+		//System.out.println(Math.signum(angleVelocity));
 		if (angleVelocity < 0.0) {
 			motor.backward();
 			angleVelocity = BLOCK_DOWN * angleVelocity;
