@@ -54,12 +54,12 @@ public class Brachialbiber {
 
 		for (int i = 0; i < SCREENHIGHT && currSplit != n; i++) {
 			LCD.drawString(output[currSplit], Xpos, i);
-			Xpos += output[currSplit].length() + 1;
+			Xpos += output[currSplit].length() + 2;
 			currSplit++;
 			while (currSplit != n
 					&& Xpos + output[currSplit].length() <= SCREENWIDTH) {
 				LCD.drawString(output[currSplit], Xpos, i);
-				Xpos += output[currSplit].length() + 1;
+				Xpos += output[currSplit].length() + 2;
 				currSplit++;
 			}
 			System.out.println();

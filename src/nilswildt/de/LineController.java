@@ -52,10 +52,29 @@ public class LineController {
 		this.rightMotor = rightMotor;
 		rgbMode = this.sensor.getRGBMode();
 		sample = new float[rgbMode.sampleSize() + 1];
-		speed = 150; //Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed()); // TODO Austesten! /Zusammen mit													// Acceleration
-		KP = speed / 8;
+		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed()); // TODO Austesten! /Zusammen mit													// Acceleration
+		KP = speed / 8.0;
 		// Generate sampleArray:
 		sample = new float[4]; // rgb,intensity at [3]
+		
+		/*
+		 * while(!Button.ESCAPE.isDown()){
+			sample=fetchCurrentValues();
+			LCD.clear();
+				System.out.println("----------------");
+				System.out.println(sample[3]);
+				System.out.println(sample[0]);
+				System.out.println(sample[1]);
+				System.out.println(sample[2]);
+				Delay.msDelay(1000);
+				System.out.println("++++++++++++++");
+				System.out.println(leftMotor.getMaxSpeed());
+				System.out.println(rightMotor.getMaxSpeed());
+				System.out.println(leftMotor.getAcceleration());
+				Delay.msDelay(1000);			
+		}
+		System.exit(1);
+		*/
 	}
 
 	public void initializeLineController() {
@@ -107,7 +126,6 @@ public class LineController {
 		leftMotor.setSpeed(speed);
 		rightMotor.setSpeed(speed);
 		
-		
 		leftMotor.forward();
 		rightMotor.forward();
 
@@ -120,8 +138,11 @@ public class LineController {
 		currentValue = fetchCurrentValues()[3];
 		error = midValue - currentValue;
 		turn = KP * error;
-		leftMotor.setSpeed((int) Math.ceil(speed - turn));
-		rightMotor.setSpeed((int) Math.ceil(speed + turn));
+		leftMotor.setSpeed((int) Math.round(speed - turn));
+		rightMotor.setSpeed((int) Math.round(speed + turn));
+		LCD.clear();
+		System.out.println(leftMotor.getSpeed());
+		System.out.println(rightMotor.getSpeed());
 	}
 
 	/**
