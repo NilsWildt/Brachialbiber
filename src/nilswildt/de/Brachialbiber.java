@@ -11,7 +11,6 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
 
-
 public class Brachialbiber {
 	protected EV3ColorSensor colSensor;
 	private NXTMotor eiMotor;
@@ -33,11 +32,14 @@ public class Brachialbiber {
 	 * @param b
 	 * @param gyroSenPort
 	 */
-	public Brachialbiber(Port colSensPort, Port gyroSensPort, Port NXTSensPort) {
+	public Brachialbiber(Port colSensPort, Port gyroSensPort, Port NXTSensPort, Port leftMotorPort, Port rightMotorPort) {
 		colSensor = new EV3ColorSensor(colSensPort);
 		gyro = new EV3GyroSensor(gyroSensPort);
 		eiMotor = new NXTMotor(NXTSensPort);
 		gyCo = new GyroController(gyro, eiMotor);
+		leftMotor = new EV3LargeRegulatedMotor(leftMotorPort);
+		rightMotor = new EV3LargeRegulatedMotor(rightMotorPort);
+		
 		lineCo = new LineController(colSensor, leftMotor, rightMotor);
 	}
 

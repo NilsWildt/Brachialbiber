@@ -122,6 +122,7 @@ public class LineController {
 		rgbMode.fetchSample(sample, 0);
 		System.out.println(sample);
 		// TODO calculate intensity into [3]
+		sample[3] = 0.9f;
 		return sample;
 	}
 
