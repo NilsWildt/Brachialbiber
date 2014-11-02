@@ -4,6 +4,8 @@ import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.robotics.SampleProvider;
+import lejos.robotics.filter.MeanFilter;
 import lejos.utility.Delay;
 
 public class GyroController {
@@ -16,6 +18,9 @@ public class GyroController {
 	private final double BLOCK_DOWN = -0.9;
 	private int newPower = 0; // from setMotion
 	private double angleVelocity = 0.0;
+	
+	private SampleProvider provider;
+	private SampleProvider average;
 
 	/**
 	 * Constructor
@@ -25,6 +30,7 @@ public class GyroController {
 	public GyroController(EV3GyroSensor gyroSensor, NXTMotor nxtMotor) {
 		sensor = gyroSensor;
 		motor = nxtMotor;
+		provider = sensor.getRateMode();
 	}
 
 	/**
@@ -45,7 +51,8 @@ public class GyroController {
 	 */
 	public float getAngleVelocity() {
 		float[] angleVelocity = new float[1];
-		sensor.getRateMode().fetchSample(angleVelocity, 0);
+		average = new MeanFilter(provider, 5); // Mittelt über 5 Werte.
+		average.fetchSample(angleVelocity, 0);
 		return angleVelocity[0];
 	}
 
