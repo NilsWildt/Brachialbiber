@@ -120,7 +120,8 @@ public class LineFollower {
 	}
 	
 	public float[] fetchSample(){
-		rgbMode.fetchSample(sample, 0);
+		average = new MeanFilter(rgbMode, 5);
+		average.fetchSample(sample, 0);
 		for (int i=0; i<sample.length-1; i++) {
 			sample[i] = sample[i] * 100f;
 		}
@@ -131,6 +132,13 @@ public class LineFollower {
 	}	
 	
 	public float[] fetchMiddleSample(){
+		for (int i=0; i<sample.length-1; i++) {
+			sample[i] = sample[i] * 100f;
+		}
+		
+		sample[3] = (float) Math.sqrt((Math.pow(sample[0], 2)
+				+ Math.pow(sample[1], 2) + Math.pow(2*sample[2], 2))); // TODO ÜBERARBEITEN
+		return sample;
 		/*
 		for(int j=0; j<sampleSample.length; j++){
 			rgbMode.fetchSample(sample, 0);
@@ -146,10 +154,7 @@ public class LineFollower {
 		
 		sample[3] = (float) Math.sqrt((Math.pow(sample[0], 2)
 				+ Math.pow(sample[1], 2) + Math.pow(2*sample[2], 2))); // TODO ÜBERARBEITEN
-		*/
-		average = new MeanFilter(rgbMode, 5);
-		average.fetchSample(sample, 0);
-		return sample;
+		return sample;*/
 	}
 	
 }
