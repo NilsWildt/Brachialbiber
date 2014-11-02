@@ -22,7 +22,6 @@ public class Brachialbiber {
 	private EV3LargeRegulatedMotor leftMotor;
 	private EV3LargeRegulatedMotor rightMotor;
 
-
 	private static int SCREENWIDTH = 17;
 	private static int SCREENHIGHT = 7;
 
@@ -34,7 +33,8 @@ public class Brachialbiber {
 	 * @param b
 	 * @param gyroSenPort
 	 */
-	public Brachialbiber(Port colSensPort, Port gyroSensPort, Port NXTSensPort, Port leftMotorPort, Port rightMotorPort) {
+	public Brachialbiber(Port colSensPort, Port gyroSensPort, Port NXTSensPort,
+			Port leftMotorPort, Port rightMotorPort) {
 		colSensor = new EV3ColorSensor(colSensPort);
 		gyro = new EV3GyroSensor(gyroSensPort);
 		eiMotor = new NXTMotor(NXTSensPort);
@@ -73,7 +73,7 @@ public class Brachialbiber {
 			Xpos = 0;
 		}
 	}
-	
+
 	public static void printer(String text) {
 		String[] output = text.split(" ");
 		int n = output.length;
@@ -94,28 +94,29 @@ public class Brachialbiber {
 			Xpos = 0;
 		}
 	}
-	
+
 	/*
 	 * Writes any Data as String to a File named AAAoutput.txt
 	 */
-	public static <T> void writeToFile(T data){
+	public static <T> void writeToFile(T data) {
 		String stringData = new String(data.toString());
 		try {
-			
-		      File file = new File("AAAoutput.txt");
-		      // Wenn es das ned gibt, oder macht der das automatisch? TODO!
-		      if (!file.exists()) {
-					file.createNewFile();
-				}
-		      PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)), true);
-		      out.append(stringData); // oder out.write?
-		      out.flush();
-		      out.close();
-		      
-		    } catch (IOException e) {
-		      System.out.println("I/O Error");
-		      // System.exit(0); //Roboter soll nicht stehen bleiben...
-		    }
+
+			File file = new File("AAAoutput.txt");
+			// Wenn es das ned gibt, oder macht der das automatisch? TODO!
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			PrintWriter out = new PrintWriter(new BufferedWriter(
+					new FileWriter(file)), true);
+			out.append(stringData); // oder out.write?
+			out.flush();
+			out.close();
+
+		} catch (IOException e) {
+			System.out.println("I/O Error");
+			// System.exit(0); //Roboter soll nicht stehen bleiben...
+		}
 	}
 
 }
