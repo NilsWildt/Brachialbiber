@@ -49,10 +49,10 @@ public class LineFollower {
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		rgbMode = this.sensor.getRGBMode();
-		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/4.0f; // Acceleration
-		KP = 8.4f;//speed / 8.0;
-		KI = 0.05f;//speed * 0.0;
-		KD = 35.6f;//speed * 0.0;
+		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration
+		KP = 11f;//speed / 8.0;
+		KI = 0.0f;//speed * 0.0;
+		KD = 0.0f;//speed * 0.0;
 		sample = new float[4]; // rgb,intensity at [3]
 		integral = 0.0;
 		derivative = 0.0;
