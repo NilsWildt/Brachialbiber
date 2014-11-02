@@ -170,7 +170,7 @@ public class LineFollower {
 	
 	public float getRedChange(){
 		sample = fetchAverageSample();
-		return sample[0];
+		return sample[0] - fetchAverageSample()[0];
 	}
 	
 }
