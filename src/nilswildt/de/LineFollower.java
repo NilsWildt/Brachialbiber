@@ -168,4 +168,9 @@ public class LineFollower {
 		return false;
 	}
 	
+	public float getRedChange(){
+		sample = fetchAverageSample();
+		return sample[0];
+	}
+	
 }
