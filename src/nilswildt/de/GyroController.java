@@ -13,7 +13,7 @@ public class GyroController {
 
 	// Feste Werte des Controllers
 	private final double Kp = 5.25; // ergibt sich empirisch, Verwendung in setMotion()!
-	private final double BLOCK_DOWN = -0.6;
+	private final double BLOCK_DOWN = -0.9;
 	private int newPower = 0; // from setMotion
 	private double angleVelocity = 0.0;
 
@@ -50,7 +50,7 @@ public class GyroController {
 	}
 
 	/**
-	 * Diese Methode korrigiert den Winkel des Eihalters, so dass er möglichst gerade bleibt
+	 * Diese Methode korrigiert den Winkel des Eihalters, so dass er mÃ¶glichst gerade bleibt
 	 * 
 	 * @param angle
 	 *            Momentane Winkelgeschwindigkeit des Gyrosensors
