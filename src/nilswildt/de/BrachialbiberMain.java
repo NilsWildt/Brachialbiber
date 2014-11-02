@@ -1,4 +1,4 @@
-ackage nilswildt.de;
+package nilswildt.de;
 
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
@@ -9,7 +9,6 @@ import lejos.utility.Delay;
 
 public class BrachialbiberMain {
 	public static void main(String[] args) {
-		long time;
 		float red;
 		float max = 0f;
 		
