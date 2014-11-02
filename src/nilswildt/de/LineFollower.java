@@ -164,13 +164,7 @@ public class LineFollower {
 	
 	public boolean isBlue(){
 		sample = fetchAverageSample();
-		if(sample[0] < sample[2]/2.0f) return true;
+		if(sample[0] < sample[2]*1.25f) return true;
 		return false;
 	}
-	
-	public float getRedChange(){
-		sample = fetchAverageSample();
-		return sample[0] - fetchAverageSample()[0];
-	}
-	
 }
