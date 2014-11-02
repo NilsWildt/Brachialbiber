@@ -12,7 +12,7 @@ public class Brachialbiber {
 	private NXTMotor eiMotor;
 	private EV3GyroSensor gyro;
 	protected GyroController gyCo;
-	protected LineController lineCo;
+	protected LineFollower lineFollower;
 	private EV3LargeRegulatedMotor leftMotor;
 	private EV3LargeRegulatedMotor rightMotor;
 
@@ -35,8 +35,7 @@ public class Brachialbiber {
 		gyCo = new GyroController(gyro, eiMotor);
 		leftMotor = new EV3LargeRegulatedMotor(leftMotorPort);
 		rightMotor = new EV3LargeRegulatedMotor(rightMotorPort);
-		
-		lineCo = new LineController(colSensor, leftMotor, rightMotor);
+		lineFollower = new LineFollower(colSensor, leftMotor, rightMotor);
 	}
 
 	/**
@@ -44,8 +43,31 @@ public class Brachialbiber {
 	 * 
 	 * @param text
 	 *            Text, der ausgedruckt werden soll
+	 * @param Ypos
+	 *            Zeile in der der Text beginnt
 	 */
 
+	public static void printer(String text, int Ypos) {
+		String[] output = text.split(" ");
+		int n = output.length;
+		int currSplit = 0;
+		int Xpos = 0;
+
+		for (int i = Ypos; i < SCREENHIGHT && currSplit != n; i++) {
+			LCD.drawString(output[currSplit], Xpos, i);
+			Xpos += output[currSplit].length() + 2;
+			currSplit++;
+			while (currSplit != n
+					&& Xpos + output[currSplit].length() <= SCREENWIDTH) {
+				LCD.drawString(output[currSplit], Xpos, i);
+				Xpos += output[currSplit].length() + 2;
+				currSplit++;
+			}
+			System.out.println();
+			Xpos = 0;
+		}
+	}
+	
 	public static void printer(String text) {
 		String[] output = text.split(" ");
 		int n = output.length;
