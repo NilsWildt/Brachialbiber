@@ -50,9 +50,9 @@ public class LineFollower {
 		this.rightMotor = rightMotor;
 		rgbMode = this.sensor.getRGBMode();
 		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration
-		KP = 11f;//speed / 8.0;
-		KI = 0.0f;//speed * 0.0;
-		KD = 0.0f;//speed * 0.0;
+		KP = 11f;//8.4f;//speed / 8.0;
+		KI = 0.0f;//0.05f;//speed * 0.0;
+		KD = 0.0f;//35.6f;//speed * 0.0;
 		sample = new float[4]; // rgb,intensity at [3]
 		integral = 0.0;
 		derivative = 0.0;
@@ -66,13 +66,13 @@ public class LineFollower {
 		while(Button.ENTER.isUp()){
 			brightValue = (double) fetchAverageSample()[3];
 		}
-		Delay.msDelay(200);
+		Delay.msDelay(500);
 		LCD.clear();
 		LCD.drawString("Calibrate Dark-Value: (Press ENTER-Button)",0,0);
 		while(Button.ENTER.isUp()){
 			darkValue = (double) fetchAverageSample()[3];
 		}
-		Delay.msDelay(200);
+		Delay.msDelay(500);
 		midValue = (brightValue + darkValue) / 2.0;
 		LCD.clear();
 		Brachialbiber.printer("Justiere auf 0");
@@ -121,7 +121,6 @@ public class LineFollower {
 			}
 		}
 		*/
-		
 		if(speedLeft == speedRight){
 			if(speedLeft < speedRight){
 				speedRight *= 1.5;
@@ -135,7 +134,7 @@ public class LineFollower {
 		
 		lastError = error;
 		LCD.clear();
-		System.out.println(leftMotor.getSpeed() + "  " + rightMotor.getSpeed());
+		//System.out.println(leftMotor.getSpeed() + "  " + rightMotor.getSpeed());
 		//System.out.println(Math.round((error)*100.0)/100.0);
 	}
 	
@@ -167,4 +166,5 @@ public class LineFollower {
 		if(sample[0] < sample[2]*1.25f) return true;
 		return false;
 	}
+	
 }
