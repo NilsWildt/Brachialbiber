@@ -5,6 +5,7 @@ import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.SampleProvider;
+import lejos.robotics.filter.MeanFilter;
 import lejos.utility.Delay;
 
 public class LineFollower {
@@ -13,11 +14,11 @@ public class LineFollower {
 	private EV3LargeRegulatedMotor leftMotor;
 	private EV3LargeRegulatedMotor rightMotor;
 	
-	private final static int acceleration = 1000;
+	private final static int acceleration = 6000;
 	
 	private float[] sample;
-	private float[][] sampleSample;
 	private SampleProvider rgbMode;
+	private SampleProvider average;
 	private float speed;
 	private double brightValue; // Höchster Helligkeitswert
 	private double darkValue; // Höchster Schwarzwert (Linie)
@@ -25,6 +26,10 @@ public class LineFollower {
 	private double currentValue; // Immer der aktuelle Helligkeitswert
 	private double error;
 	private double turn;
+	
+	//Kc = 14
+	//Pc = 0,786
+	//dT = 2,312
 	
 	private final double KP;
 	private final double KI;
@@ -37,18 +42,18 @@ public class LineFollower {
 	private double derivative;
 	private double lastError;
 	
+	
 	public LineFollower(EV3ColorSensor sensor,
 			EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor){
 		this.sensor = sensor;
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		rgbMode = this.sensor.getRGBMode();
-		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/10f; // Acceleration
-		KP = 10.0f;//speed / 8.0;
-		KI = 0.001f;//speed * 0.0;
-		KD = 10.0f;//speed * 0.0;
+		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/4.0f; // Acceleration
+		KP = 8.4f;//speed / 8.0;
+		KI = 0.05f;//speed * 0.0;
+		KD = 35.6f;//speed * 0.0;
 		sample = new float[4]; // rgb,intensity at [3]
-		sampleSample = new float[3][4];
 		integral = 0.0;
 		derivative = 0.0;
 		lastError = 0.0;
@@ -59,13 +64,13 @@ public class LineFollower {
 		LCD.clear();
 		LCD.drawString("Calibrate Brigth-Value: (Press ENTER-Button)",0,0);
 		while(Button.ENTER.isUp()){
-			brightValue = (double) fetchMiddleSample()[3];
+			brightValue = (double) fetchAverageSample()[3];
 		}
 		Delay.msDelay(200);
 		LCD.clear();
 		LCD.drawString("Calibrate Dark-Value: (Press ENTER-Button)",0,0);
 		while(Button.ENTER.isUp()){
-			darkValue = (double) fetchMiddleSample()[3];
+			darkValue = (double) fetchAverageSample()[3];
 		}
 		Delay.msDelay(200);
 		midValue = (brightValue + darkValue) / 2.0;
@@ -74,7 +79,7 @@ public class LineFollower {
 		Delay.msDelay(1000);
 		LCD.clear();
 		while(Button.ENTER.isUp()) {
-			value = Math.round((fetchMiddleSample()[3] - midValue)*100.0)/100.0;
+			value = Math.round((fetchAverageSample()[3] - midValue)*100.0)/100.0;
 			System.out.println(value);
 		}
 	}
@@ -91,7 +96,7 @@ public class LineFollower {
 	}
 	
 	public void drive() {
-		currentValue = fetchMiddleSample()[3];
+		currentValue = fetchAverageSample()[3];
 		
 		//P-Part
 		error = midValue - currentValue;
@@ -104,24 +109,38 @@ public class LineFollower {
 		derivative = error - lastError;
 		
 		turn = KP * error + KI * integral + KD * derivative;
-		speedLeft = Math.max(Math.min(speed - turn, 2*speed), 1);
-		speedRight = Math.max(Math.min(speed + turn, 2*speed), 1);
+		speedLeft = Math.round(Math.max(Math.min(speed - turn, 2*speed), 1));
+		speedRight = Math.round(Math.max(Math.min(speed + turn, 2*speed), 1));
 		
-		leftMotor.setSpeed((int) Math.round(speedLeft));
-		rightMotor.setSpeed((int) Math.round(speedRight));
+		/*
+		if(speedLeft < speedRight*0.80 || speedRight < speedLeft*0.80){
+			if(speedLeft < speedRight){
+				speedLeft *= 0.2;
+			} else{
+				speedRight *= 0.2;
+			}
+		}
+		*/
+		
+		if(speedLeft == speedRight){
+			if(speedLeft < speedRight){
+				speedRight *= 1.5;
+			} else{
+				speedLeft *= 1.5;
+			}
+		}
+		
+		leftMotor.setSpeed((int) speedLeft);
+		rightMotor.setSpeed((int) speedRight);
 		
 		lastError = error;
 		LCD.clear();
 		System.out.println(leftMotor.getSpeed() + "  " + rightMotor.getSpeed());
-	}
-	
-	public void testDrive(){
-		
+		//System.out.println(Math.round((error)*100.0)/100.0);
 	}
 	
 	public float[] fetchSample(){
-		average = new MeanFilter(rgbMode, 5);
-		average.fetchSample(sample, 0);
+		rgbMode.fetchSample(sample, 0);
 		for (int i=0; i<sample.length-1; i++) {
 			sample[i] = sample[i] * 100f;
 		}
@@ -131,7 +150,9 @@ public class LineFollower {
 		return sample;
 	}	
 	
-	public float[] fetchMiddleSample(){
+	public float[] fetchAverageSample(){
+		average = new MeanFilter(rgbMode, 5);
+		average.fetchSample(sample, 0);
 		for (int i=0; i<sample.length-1; i++) {
 			sample[i] = sample[i] * 100f;
 		}
@@ -139,22 +160,12 @@ public class LineFollower {
 		sample[3] = (float) Math.sqrt((Math.pow(sample[0], 2)
 				+ Math.pow(sample[1], 2) + Math.pow(2*sample[2], 2))); // TODO ÜBERARBEITEN
 		return sample;
-		/*
-		for(int j=0; j<sampleSample.length; j++){
-			rgbMode.fetchSample(sample, 0);
-			for (int i=0; i<sample.length-1; i++) {
-				sample[i] = sample[i] * 100f;
-				sampleSample[j][i] = sample[i];
-			} 
-		}
-		
-		for(int k=0; k<sampleSample.length; k++){
-			sample[k] = (sampleSample[k][1] + sampleSample[k][2] + sampleSample[k][3])/3f;
-		}
-		
-		sample[3] = (float) Math.sqrt((Math.pow(sample[0], 2)
-				+ Math.pow(sample[1], 2) + Math.pow(2*sample[2], 2))); // TODO ÜBERARBEITEN
-		return sample;*/
+	}
+	
+	public boolean isBlue(){
+		sample = fetchAverageSample();
+		if(sample[0] < sample[2]/2.0f) return true;
+		return false;
 	}
 	
 }
