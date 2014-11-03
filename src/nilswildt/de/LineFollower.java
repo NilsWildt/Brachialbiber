@@ -14,7 +14,7 @@ public class LineFollower {
 	private EV3LargeRegulatedMotor leftMotor;
 	private EV3LargeRegulatedMotor rightMotor;
 	
-	private final static int acceleration = 6000;
+	private final static int acceleration = 1000;
 	
 	private float[] sample;
 	private SampleProvider rgbMode;
@@ -27,13 +27,13 @@ public class LineFollower {
 	private double error;
 	private double turn;
 	
-	//Kc = 14
-	//Pc = 0,786
-	//dT = 2,312
+	//Kc = 12
+	private final double Pc = 0.792;
+	private final double dT = 0.02312;
 	
 	private double KP;
-	private final double KI;
-	private final double KD;
+	private double KI;
+	private double KD;
 	
 	private double speedLeft;
 	private double speedRight;
@@ -50,9 +50,9 @@ public class LineFollower {
 		this.rightMotor = rightMotor;
 		rgbMode = this.sensor.getRGBMode();
 		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/4.0f; // Acceleration
-		KP = 11f;//8.4f;//speed / 8.0;
-		KI = 0.0f;//0.05f;//speed * 0.0;
-		KD = 0.0f;//35.6f;//speed * 0.0;
+		//KP = 11f;//8.4f;//speed / 8.0;
+		//KI = 0.0f;//0.05f;//speed * 0.0;
+		//KD = 0.0f;//35.6f;//speed * 0.0;
 		sample = new float[4]; // rgb,intensity at [3]
 		integral = 0.0;
 		derivative = 0.0;
@@ -73,7 +73,7 @@ public class LineFollower {
 			darkValue = (double) fetchAverageSample()[3];
 		}
 		Delay.msDelay(500);
-		midValue = (brightValue + darkValue) / 2.0 - 1.5;
+		midValue = (brightValue + darkValue) / 2.0;
 		LCD.clear();
 		Brachialbiber.printer("Justiere auf 0");
 		Delay.msDelay(1000);
@@ -83,8 +83,10 @@ public class LineFollower {
 			System.out.println(value);
 		}
 		
-		// JETZT KP anpassen! Relativer KP //Angepasst nach Bahn von Markus
-		KP = 11*(25/(brightValue-darkValue));
+		//Werte an Strecke anpassen
+		KP = 10*25/(brightValue - darkValue);
+		//KI = 2.0*KP*dT/Pc;
+		//KD = KP*Pc/(8.0*dT);
 	}
 	
 	public void initMotor(){
@@ -123,7 +125,7 @@ public class LineFollower {
 				speedRight *= 0.2;
 			}
 		}
-		*/
+		
 		if(speedLeft == speedRight){
 			if(speedLeft < speedRight){
 				speedRight *= 1.5;
@@ -131,6 +133,7 @@ public class LineFollower {
 				speedLeft *= 1.5;
 			}
 		}
+		*/
 		
 		leftMotor.setSpeed((int) speedLeft);
 		rightMotor.setSpeed((int) speedRight);
