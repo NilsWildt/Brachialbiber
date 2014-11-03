@@ -31,7 +31,7 @@ public class LineFollower {
 	//Pc = 0,786
 	//dT = 2,312
 	
-	private final double KP;
+	private double KP;
 	private final double KI;
 	private final double KD;
 	
@@ -49,7 +49,7 @@ public class LineFollower {
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		rgbMode = this.sensor.getRGBMode();
-		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration
+		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/4.0f; // Acceleration
 		KP = 11f;//8.4f;//speed / 8.0;
 		KI = 0.0f;//0.05f;//speed * 0.0;
 		KD = 0.0f;//35.6f;//speed * 0.0;
@@ -73,7 +73,7 @@ public class LineFollower {
 			darkValue = (double) fetchAverageSample()[3];
 		}
 		Delay.msDelay(500);
-		midValue = (brightValue + darkValue) / 2.0;
+		midValue = (brightValue + darkValue) / 2.0 - 1.5;
 		LCD.clear();
 		Brachialbiber.printer("Justiere auf 0");
 		Delay.msDelay(1000);
@@ -82,6 +82,9 @@ public class LineFollower {
 			value = Math.round((fetchAverageSample()[3] - midValue)*100.0)/100.0;
 			System.out.println(value);
 		}
+		
+		// JETZT KP anpassen! Relativer KP //Angepasst nach Bahn von Markus
+		KP = 11*(25/(brightValue-darkValue));
 	}
 	
 	public void initMotor(){

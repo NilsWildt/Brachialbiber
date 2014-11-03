@@ -21,8 +21,8 @@ public class BrachialbiberMain {
 		Delay.msDelay(1000);
 		biber.gyCo.initalizeGyroController();
 		Delay.msDelay(200);
-		biber.lineFollower.initFollower();
-		biber.lineFollower.initMotor();
+		//biber.lineFollower.initFollower();
+		//biber.lineFollower.initMotor();
 		LCD.clear();
 		Sound.beep();
 		Delay.msDelay(200);
@@ -32,11 +32,11 @@ public class BrachialbiberMain {
 		//LCD.drawString("Blue:" , 0, 2);
 		while (Button.ESCAPE.isUp()){// && !isBlue){
 			if(Button.UP.isDown()){
-				i += 0.5;
+				i += 0.1;
 				biber.gyCo.setKP(i);
 			}
 			if(Button.DOWN.isDown()){
-				i -= 0.5;
+				i -= 0.1;
 				biber.gyCo.setKP(i);
 			}
 			/*LCD.clear();
@@ -48,10 +48,11 @@ public class BrachialbiberMain {
 			LCD.drawInt((int) (s[1]*100.0f), 7, 1);
 			LCD.drawInt((int) (s[2]*100.0f), 6, 2);
 			Delay.msDelay(100);*/
-			biber.lineFollower.drive();
+			//biber.lineFollower.drive();
 			isBlue = biber.lineFollower.isBlue();
-			if(isBlue) onlyOnce = true;
-			if(onlyOnce) biber.gyCo.setMotion();
+			if(isBlue) Sound.beep();//onlyOnce = true;
+			if(onlyOnce){}
+			biber.gyCo.setMotion();
 		}	
 	}
 }
