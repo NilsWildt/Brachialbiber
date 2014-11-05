@@ -28,8 +28,8 @@ public class LineFollower {
 	private double turn;
 	
 	//Kc = 12
-	private final double Pc = 0.792;
-	private final double dT = 0.02312;
+	private final double Pc = 0.792; //Periodendauer
+	private final double dT = 0.02312; //Durchlauf 
 	
 	private double KP;
 	private double KI;
@@ -84,7 +84,8 @@ public class LineFollower {
 		}
 		
 		//Werte an Strecke anpassen
-		KP = 10*25/(brightValue - darkValue);
+		KP = 10*(25+5)/(brightValue - darkValue);
+		// Uncomment to disable I and D Term!
 		//KI = 2.0*KP*dT/Pc;
 		//KD = KP*Pc/(8.0*dT);
 	}

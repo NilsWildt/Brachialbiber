@@ -1,7 +1,6 @@
 package nilswildt.de;
 
 import lejos.hardware.Button;
-import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
@@ -11,11 +10,9 @@ public class BrachialbiberMain {
 	public static void main(String[] args) {
 		boolean isBlue = false;
 		int onlyOnce = 0;
-		double i = 8.0;
 		
 		Brachialbiber biber = new Brachialbiber(SensorPort.S1, SensorPort.S2,
-				MotorPort.B, MotorPort.A,MotorPort.D);
-		//Sound.beep();
+				MotorPort.B, MotorPort.A, MotorPort.D);
 		Brachialbiber.printer("Press enter to continue");
 		Button.waitForAnyPress();
 		Delay.msDelay(1000);
@@ -23,20 +20,19 @@ public class BrachialbiberMain {
 		Delay.msDelay(200);
 		//biber.lineFollower.initFollower();
 		//biber.lineFollower.initMotor();
-		//LCD.clear();
-		//Sound.beep();
-		//Delay.msDelay(200);
+
 		LCD.clear();
-		//-------------------------------------------------------------
-		while (Button.ESCAPE.isUp()){// && onlyOnce < 2){
-			/*biber.lineFollower.drive();
+		// -------------------------------------------------------------
+		while (Button.ESCAPE.isUp()) {
+			biber.lineFollower.drive();
 			isBlue = biber.lineFollower.isBlue();
-			if(isBlue){
-				Sound.beep();
+			if (isBlue) { 
 				onlyOnce++;
 			}
-			*/
+			if(onlyOnce>=10000){
+				Button.waitForAnyPress();
+			}
 			biber.gyCo.setMotion();
-		}	
+		}
 	}
 }
