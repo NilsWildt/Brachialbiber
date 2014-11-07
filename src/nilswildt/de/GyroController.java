@@ -12,8 +12,8 @@ public class GyroController {
 	NXTMotor motor;
 
 	// Feste Werte des Controllers
-	private double Kp = 3.4; // ergibt sich empirisch, Verwendung in setMotion()!
-	private final double BLOCK_DOWN = -0.9; // -0.9
+	private double Kp = 3.2; // ergibt sich empirisch, Verwendung in setMotion()!
+	private final double BLOCK_DOWN = -1; // -0.9
 	private int newPower = 0; // from setMotion
 	private double angleVelocity = 0.0;
 	private double sumPower = 0.0;
@@ -31,22 +31,15 @@ public class GyroController {
 		provider = sensor.getRateMode();
 	}
 
-	@Deprecated
-	public void setKP(double value) {
-		this.Kp = value;
-	}
-
 	/**
 	 * Initialsiert die Startwerte des Gyrosensors (Wert wird auf 0 gesetzt (hopefully XD))
 	 */
 	public void initalizeGyroController() {
 		Brachialbiber.printer("Gyrosensor wird initialisiert.");
-		Delay.msDelay(500);
+		Delay.msDelay(1000);
 		LCD.clear();
-		sensor.reset(); // Das is iwie n bissl unsave, es setzt den Gyro in Mode 4, aber ich hab kein Plan, was der
-						// macht.
-		// TODO rausfinden, was das tut
-		Delay.msDelay(500);
+		sensor.reset();
+		Delay.msDelay(1000);
 		Brachialbiber.printer("Gyrosensor fertig initialisiert");
 	}
 
@@ -54,7 +47,6 @@ public class GyroController {
 	 * @return Momentane Winkelgeschwindigkeit des Gyros TODO Filter? Median? Mittelwert?
 	 */
 	public float getAngleVelocity() {
-
 		float[] angleVelocity = new float[1];
 		provider.fetchSample(angleVelocity, 0);
 		return angleVelocity[0];
@@ -74,7 +66,8 @@ public class GyroController {
 		newPower = Math.min(newPower, 100);
 
 		sumPower += newPower;
-
+		
+		
 		if (sumPower >= 30 || sumPower <= -30) {
 			if (sumPower < 0.0) {
 				motor.backward();
@@ -83,13 +76,11 @@ public class GyroController {
 				motor.forward();
 			}
 
-			motor.setPower((int)sumPower);
-			System.out.println(sumPower);
-			sumPower=0.0;
-		} 
-		else {
+			motor.setPower((int) sumPower);
+			sumPower = 0.0;
+		} else {
 			motor.setPower(0);
-			// motor.flt();
+			//motor.flt(); //Klappt ganz gut...
 		}
 
 	}

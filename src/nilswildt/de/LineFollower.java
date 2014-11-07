@@ -84,7 +84,7 @@ public class LineFollower {
 		}
 		
 		//Werte an Strecke anpassen
-		KP = 10*(25+5)/(brightValue - darkValue);
+		KP = 10*(25)/(brightValue - darkValue);
 		// Uncomment to disable I and D Term!
 		//KI = 2.0*KP*dT/Pc;
 		//KD = KP*Pc/(8.0*dT);
@@ -118,31 +118,13 @@ public class LineFollower {
 		speedLeft = Math.round(Math.max(Math.min(speed - turn, 2*speed), 1));
 		speedRight = Math.round(Math.max(Math.min(speed + turn, 2*speed), 1));
 		
-		/*
-		if(speedLeft < speedRight*0.80 || speedRight < speedLeft*0.80){
-			if(speedLeft < speedRight){
-				speedLeft *= 0.2;
-			} else{
-				speedRight *= 0.2;
-			}
-		}
-		
-		if(speedLeft == speedRight){
-			if(speedLeft < speedRight){
-				speedRight *= 1.5;
-			} else{
-				speedLeft *= 1.5;
-			}
-		}
-		*/
 		
 		leftMotor.setSpeed((int) speedLeft);
 		rightMotor.setSpeed((int) speedRight);
 		
 		lastError = error;
 		LCD.clear();
-		//System.out.println(leftMotor.getSpeed() + "  " + rightMotor.getSpeed());
-		//System.out.println(Math.round((error)*100.0)/100.0);
+
 	}
 	
 	public float[] fetchSample(){
@@ -152,7 +134,7 @@ public class LineFollower {
 		}
 		
 		sample[3] = (float) Math.sqrt((Math.pow(sample[0], 2)
-				+ Math.pow(sample[1], 2) + Math.pow(2*sample[2], 2))); // TODO ÜBERARBEITEN
+				+ Math.pow(sample[1], 2) + Math.pow(2*sample[2], 2)));
 		return sample;
 	}	
 	
