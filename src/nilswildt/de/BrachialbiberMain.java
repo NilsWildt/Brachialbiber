@@ -27,8 +27,6 @@ public class BrachialbiberMain {
 
 		LCD.clear();
 
-
-
 		// -------------------------------------------------------------
 		while (Button.ESCAPE.isUp()) {
 			biber.lineFollower.drive();

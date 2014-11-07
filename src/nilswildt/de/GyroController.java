@@ -86,6 +86,6 @@ public class GyroController {
 	}
 	
 	public void interruptMotion(){
-		this.Kp = 0.0;
+		this.motor.setPower(0);
 	}
 }
