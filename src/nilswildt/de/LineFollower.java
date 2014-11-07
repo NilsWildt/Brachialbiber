@@ -156,4 +156,9 @@ public class LineFollower {
 		return false;
 	}
 	
+	public void stopMotor(){
+		leftMotor.flt();
+		rightMotor.flt();
+	}
+	
 }

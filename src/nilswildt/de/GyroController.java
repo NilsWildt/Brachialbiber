@@ -13,7 +13,7 @@ public class GyroController {
 
 	// Feste Werte des Controllers
 	private double Kp = 3.2; // ergibt sich empirisch, Verwendung in setMotion()!
-	private final double BLOCK_DOWN = -1; // -0.9
+	private final double BLOCK_DOWN = -0.95; // -0.9
 	private int newPower = 0; // from setMotion
 	private double angleVelocity = 0.0;
 	private double sumPower = 0.0;
@@ -83,5 +83,9 @@ public class GyroController {
 			//motor.flt(); //Klappt ganz gut...
 		}
 
+	}
+	
+	public void interruptMotion(){
+		this.Kp = 0.0;
 	}
 }
