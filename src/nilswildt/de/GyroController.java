@@ -1,5 +1,7 @@
 package nilswildt.de;
 
+import java.io.IOException;
+
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.sensor.EV3GyroSensor;
@@ -12,23 +14,26 @@ public class GyroController {
 	NXTMotor motor;
 
 	// Feste Werte des Controllers
-	private double Kp = 3.2; // ergibt sich empirisch, Verwendung in setMotion()!
-	private final double BLOCK_DOWN = -0.95; // -0.9
-	private int newPower = 0; // from setMotion
+	private double Kp = 4.0; // ergibt sich empirisch, Verwendung in setMotion()!
+	private final double BLOCK_DOWN = 0.9; // -0.9
+	private double newPower = 0; // from setMotion
 	private double angleVelocity = 0.0;
 	private double sumPower = 0.0;
-
+	int cnt = 0;
+	WriteFile write;
 	private SampleProvider provider;
 
 	/**
 	 * Constructor
 	 * 
 	 * @author Markus Schmidgall
+	 * @throws IOException
 	 */
 	public GyroController(EV3GyroSensor gyroSensor, NXTMotor nxtMotor) {
 		sensor = gyroSensor;
 		motor = nxtMotor;
 		provider = sensor.getRateMode();
+		write = new WriteFile();
 	}
 
 	/**
@@ -61,31 +66,48 @@ public class GyroController {
 	 */
 	public void setMotion() {
 		angleVelocity = (double) getAngleVelocity(); // Über wie viel gemittelt wird;
+		write.writeToFile(angleVelocity); // Log angleVelocity
 		// Calculate Power
-		newPower = (int) (Kp * angleVelocity);
-		newPower = Math.min(newPower, 100);
+		newPower = (Kp * angleVelocity);
+		newPower = (-1) * Math.signum(newPower)
+				* Math.min(Math.abs(newPower), 100); // Damit auch bei negativen
 
-		sumPower += newPower;
-		
-		
-		if (sumPower >= 30 || sumPower <= -30) {
-			if (sumPower < 0.0) {
+		if (newPower * sumPower < 0) {
+			cnt++;
+			if (cnt >= 3) {
+				sumPower = 0;
+				cnt = 0;
+			}
+		} else {
+			cnt = 0;
+		}
+		if (newPower > 0) {
+			newPower *= BLOCK_DOWN;
+		}
+		if (Math.abs(newPower) >= 30) {
+			if (newPower < 0.0) {
 				motor.backward();
-				sumPower = BLOCK_DOWN * sumPower;
 			} else {
 				motor.forward();
 			}
-
-			motor.setPower((int) sumPower);
-			sumPower = 0.0;
+			motor.setPower((int) Math.round(Math.abs(newPower)));
+		} else if (Math.abs(newPower) > 2) { // zwischen null und |30|
+			sumPower += newPower;
+			if (Math.abs(sumPower) >= 30) {
+				if (sumPower < 0.0) {
+					motor.backward();
+				} else {
+					motor.forward();
+				}
+				motor.setPower((int) Math.round(Math.abs(sumPower)));
+				sumPower = 0.0;
+			}
 		} else {
 			motor.setPower(0);
-			//motor.flt(); //Klappt ganz gut...
 		}
-
 	}
-	
-	public void interruptMotion(){
+
+	public void interruptMotion() {
 		this.motor.setPower(0);
 	}
 }

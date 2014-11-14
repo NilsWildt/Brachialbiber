@@ -15,23 +15,22 @@ public class BrachialbiberMain {
 		Brachialbiber biber = new Brachialbiber(SensorPort.S1, SensorPort.S2,
 				MotorPort.B, MotorPort.A, MotorPort.D);
 
-		
-
 		Brachialbiber.printer("Press enter to continue");
 		Button.waitForAnyPress();
 		Delay.msDelay(1000);
 		biber.gyCo.initalizeGyroController();
 		Delay.msDelay(200);
-		biber.lineFollower.initFollower();
-		biber.lineFollower.initMotor();
+		//biber.lineFollower.initFollower();
+		//biber.lineFollower.initMotor();
 
 		LCD.clear();
-
 		// -------------------------------------------------------------
 		while (Button.ESCAPE.isUp()) {
 			biber.lineFollower.drive();
 			biber.gyCo.setMotion();
 		}
+		System.exit(0);
+		// Play Music and stop!
 		biber.gyCo.interruptMotion();
 		biber.lineFollower.stopMotor();
 		File musicFile = new File("quali2.wav");

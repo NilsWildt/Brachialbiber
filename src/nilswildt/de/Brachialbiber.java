@@ -1,11 +1,5 @@
 package nilswildt.de;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.NXTMotor;
@@ -92,30 +86,6 @@ public class Brachialbiber {
 			}
 			System.out.println();
 			Xpos = 0;
-		}
-	}
-
-	/*
-	 * Writes any Data as String to a File named AAAoutput.txt
-	 */
-	public static <T> void writeToFile(T data) {
-		String stringData = new String(data.toString());
-		try {
-
-			File file = new File("AAAoutput.txt");
-			// Wenn es das ned gibt, oder macht der das automatisch? TODO!
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			PrintWriter out = new PrintWriter(new BufferedWriter(
-					new FileWriter(file)), true);
-			out.append(stringData); // oder out.write?
-			out.flush();
-			out.close();
-
-		} catch (IOException e) {
-			System.out.println("I/O Error");
-			// System.exit(0); //Roboter soll nicht stehen bleiben...
 		}
 	}
 
