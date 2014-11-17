@@ -26,7 +26,7 @@ public class WriteFile {
 			writer = new FileWriter(file, true);
 			BufferedWriter out = new BufferedWriter(writer);
 			out.write(stringData);
-			out.newLine();
+			out.write(";");
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();
