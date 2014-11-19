@@ -1,35 +1,10 @@
-package nilswildt.de;
-
-import lejos.hardware.Button;
-import lejos.hardware.lcd.LCD;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.robotics.SampleProvider;
-import lejos.robotics.filter.MeanFilter;
-import lejos.utility.Delay;
-
-public class LineFollower {
-
-	private EV3ColorSensor sensor;
-	private EV3LargeRegulatedMotor leftMotor;
-	private EV3LargeRegulatedMotor rightMotor;
-	
-	private final static int acceleration = 1000;
-	
-	private float[] sample;
-	private SampleProvider rgbMode;
-	private SampleProvider average;
-	private float speed;
-	private double brightValue; // Höchster Helligkeitswert
-	private double darkValue; // Höchster Schwarzwert (Linie)
-	private double midValue; // Mitte zwischen Hell und dunkel
-	private double currentValue; // Immer der aktuelle Helligkeitswert
+private double currentValue; // Immer der aktuelle Helligkeitswert
 	private double error;
 	private double turn;
 	
-	//Kc = 12
-	private final double Pc = 0.792; //Periodendauer
-	private final double dT = 0.02312; //Durchlauf 
+	private final double KC = 5.0;
+	private final double PC = 0.66275; //Periodendauer
+	private final double dT = 0.0204; //Durchlauf 
 	
 	private double KP;
 	private double KI;
@@ -42,6 +17,7 @@ public class LineFollower {
 	private double derivative;
 	private double lastError;
 	
+	double KK = 1.1;
 	
 	public LineFollower(EV3ColorSensor sensor,
 			EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor){
@@ -49,10 +25,10 @@ public class LineFollower {
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		rgbMode = this.sensor.getRGBMode();
-		speed = Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/4.0f; // Acceleration
-		KP = 11f;//8.4f;//speed / 8.0;
-		KI = 0.0f;//0.05f;//speed * 0.0;
-		KD = 0.0f;//35.6f;//speed * 0.0;
+		speed = 278.0f;//Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration
+		KP = 5.2;//0.6*KC = 3.0;
+		KI = 0.05;//0.396;//2.0*KP*dT/PC = 0.184685;
+		KD = 12.0;//KP*PC/(8.0*dT) = 12.1829;
 		sample = new float[4]; // rgb,intensity at [3]
 		integral = 0.0;
 		derivative = 0.0;
@@ -60,8 +36,9 @@ public class LineFollower {
 	}
 	
 	public void initFollower() {
-		double value;
+		double value;		
 		LCD.clear();
+		
 		LCD.drawString("Calibrate Brigth-Value: (Press ENTER-Button)",0,0);
 		while(Button.ENTER.isUp()){
 			brightValue = (double) fetchAverageSample()[3];
@@ -73,6 +50,7 @@ public class LineFollower {
 			darkValue = (double) fetchAverageSample()[3];
 		}
 		Delay.msDelay(500);
+		
 		midValue = (brightValue + darkValue) / 2.0;
 		LCD.clear();
 		Brachialbiber.printer("Justiere auf 0");
@@ -83,11 +61,13 @@ public class LineFollower {
 			System.out.println(value);
 		}
 		
+		range = Math.abs(brightValue - darkValue)/2.0;
+		
 		//Werte an Strecke anpassen
-		KP = 10*(25)/(brightValue - darkValue);
-		// Uncomment to disable I and D Term!
-		KI = 2.0*KP*dT/Pc;
-		KD = KP*Pc/(8.0*dT);
+		//KP = 10*(25)/(brightValue - darkValue);
+		//Uncomment to disable I and D Term!
+		//KI = 2.0*KP*dT/PC;
+		//KD = KP*PC/(8.0*dT);
 		LCD.clear();
 	}
 	
@@ -107,10 +87,11 @@ public class LineFollower {
 		
 		//P-Part
 		error = midValue - currentValue;
+		error = Math.signum(error)*1.33*range/(1+Math.pow(Math.E, -0.03*1.08*range*(Math.abs(error) - 1.35*range/2.0)));
 		
 		//I-Part
-		if(Math.signum(error) != Math.signum(integral)) integral = 0.0;
-		integral = integral + error; //(2.0/3.0)*
+		//if(Math.signum(error) != Math.signum(integral)) integral = 0.0;
+		integral = (2.0/3.0)*integral + error; //(2.0/3.0)*
 		
 		//D-Part
 		derivative = error - lastError;
@@ -155,6 +136,34 @@ public class LineFollower {
 		sample = fetchAverageSample();
 		if(sample[0] < sample[2]*1.25f) return true;
 		return false;
+	}
+	
+	public double getKP(){
+		return KP;
+	}
+	
+	public void setKP(double kp){
+		this.KP = kp;
+	}
+	
+	public double getKI(){
+		return KI;
+	}
+	
+	public void setKI(double ki){
+		this.KI = ki;
+	}
+	
+	public double getKD(){
+		return KD;
+	}
+	
+	public void setKD(double kd){
+		this.KD = kd;
+	}
+	
+	public double getCurrentError(){
+		return error;
 	}
 	
 	public void stopMotor(){
