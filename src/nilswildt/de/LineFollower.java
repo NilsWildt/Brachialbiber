@@ -82,7 +82,7 @@ public class LineFollower {
 		LCD.clear();
 		while (Button.ENTER.isUp()) {
 			value = Math.round((fetchAverageSample()[3] - midValue) * 100.0) / 100.0;
-			System.out.println(value);
+			//System.out.println(value);
 		}
 
 		range = Math.abs(brightValue - darkValue) / 2.0;

@@ -1,6 +1,7 @@
 package nilswildt.de;
 
 import java.io.File;
+import java.util.Date;
 
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
@@ -11,9 +12,9 @@ import lejos.utility.Delay;
 
 public class BrachialbiberMain {
 	public static void main(String[] args) {
+
 		Brachialbiber biber = new Brachialbiber(SensorPort.S1, SensorPort.S2,
 				MotorPort.B, MotorPort.A, MotorPort.D);
-		boolean blueFlag = false;
 		Brachialbiber.printer("Press enter to continue");
 		Button.waitForAnyPress();
 		Delay.msDelay(1000);
@@ -24,22 +25,42 @@ public class BrachialbiberMain {
 
 		LCD.clear();
 		// -------------------------------------------------------------
+
+		/*
+		 * Blue stuff:
+		 */
+		int blueCount = 0;
+		boolean blueFlag = false;
 		Sound.setVolume(5); // Damit es nicht so laut Piept.
+		long startTime = System.currentTimeMillis();
+		long elapsedTime = 0L;
 
 		while (Button.ESCAPE.isUp()) {
 			// TODO Werte von Klassen abgreifen, um nicht jedesmal hier hardcoden zu müssen.
 			if (biber.lineFollower.isBlue()) {
-				Sound.beep();
-				if (!blueFlag) {
+				++blueCount;
+				elapsedTime = (new Date()).getTime() - startTime;
+				if (blueCount >= 10 && !blueFlag && elapsedTime >= (3 * 1000)) {
+					System.out.println(elapsedTime);
+					Sound.beep();
 					blueFlag = true;
+					blueCount = 0;
 					biber.gyCo.setGyroKP(4.0); // davor auf 0...
 					biber.lineFollower.setKP(1.0);
-				} else {
+					startTime=System.currentTimeMillis();
+				} else if (blueCount >= 10 && blueFlag
+						&& elapsedTime >= (3 * 1000)) {
+					Sound.beep();
+					blueCount = 0;
 					blueFlag = false;
+					startTime=System.currentTimeMillis();
 					biber.gyCo.setGyroKP(0); // davor auf 0...
 					biber.lineFollower.setKP(5.2);
 				}
+				if (blueCount == Integer.MAX_VALUE)
+					blueCount = 0; // Für den Notfall
 			}
+
 			biber.lineFollower.drive();
 			biber.gyCo.setMotion();
 		}
