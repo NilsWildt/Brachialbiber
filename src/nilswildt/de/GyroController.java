@@ -9,12 +9,11 @@ import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
 public class GyroController {
-
 	EV3GyroSensor sensor;
 	NXTMotor motor;
 
 	// Feste Werte des Controllers
-	private double Kp =0; // ergibt sich empirisch, Verwendung in setMotion()!
+	private double Kp = 0; // ergibt sich empirisch, Verwendung in setMotion()!
 	private final double BLOCK_DOWN = 0.9; // -0.9
 	private double newPower = 0; // from setMotion
 	private double angleVelocity = 0.0;
@@ -69,7 +68,7 @@ public class GyroController {
 		write.writeToFile(angleVelocity); // Log angleVelocity
 		// Calculate Power
 		newPower = (Kp * angleVelocity);
-		newPower = (-1) * Math.signum(newPower)*Math.abs(newPower); // Damit auch bei negativen , 150
+		newPower = (-1) * Math.signum(newPower)* Math.min(Math.abs(newPower), 100);
 
 		if (newPower * sumPower < 0) {
 			cnt++;
@@ -98,7 +97,7 @@ public class GyroController {
 				} else {
 					motor.forward();
 				}
-				motor.setPower((int) Math.round(Math.abs(sumPower)));
+				motor.setPower((int) Math.round(Math.abs(sumPower))); 
 				sumPower = 0.0;
 			}
 		} else {

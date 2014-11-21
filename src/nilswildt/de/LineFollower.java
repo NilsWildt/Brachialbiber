@@ -49,7 +49,7 @@ public class LineFollower {
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		rgbMode = this.sensor.getRGBMode();
-		speed = 278.0f;// Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration
+		speed = 278.0f;// Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration // 
 		KP = 5.2;// 0.6*KC = 3.0; //5.2
 		KI = 0.05;// 0.396;//2.0*KP*dT/PC = 0.184685;
 		KD = 12.0;// KP*PC/(8.0*dT) = 12.1829;
@@ -112,7 +112,7 @@ public class LineFollower {
 		// P-Part
 		error = midValue - currentValue;
 		error = Math.signum(error)
-				* 1.33
+				* 1.35
 				* range
 				/ (1 + Math.pow(Math.E, -0.03 * 1.08 * range
 						* (Math.abs(error) - 1.35 * range / 2.0)));
