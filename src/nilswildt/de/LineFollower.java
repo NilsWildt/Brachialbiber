@@ -50,7 +50,7 @@ public class LineFollower {
 		this.rightMotor = rightMotor;
 		rgbMode = this.sensor.getRGBMode();
 		speed = 278.0f;// Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration
-		KP = 5.2;// 0.6*KC = 3.0;
+		KP = 4.0;// 0.6*KC = 3.0; //5.2
 		KI = 0.05;// 0.396;//2.0*KP*dT/PC = 0.184685;
 		KD = 12.0;// KP*PC/(8.0*dT) = 12.1829;
 		sample = new float[4]; // rgb,intensity at [3]
@@ -82,7 +82,7 @@ public class LineFollower {
 		LCD.clear();
 		while (Button.ENTER.isUp()) {
 			value = Math.round((fetchAverageSample()[3] - midValue) * 100.0) / 100.0;
-			//System.out.println(value);
+			System.out.println(value);
 		}
 
 		range = Math.abs(brightValue - darkValue) / 2.0;

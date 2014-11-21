@@ -28,10 +28,12 @@ public class BrachialbiberMain {
 
 		/*
 		 * Blue stuff:
+		 * Beachte: KP WERTE NICHT VERGESSEN
+		 * 			Wie viele count?
 		 */
 		int blueCount = 0;
 		boolean blueFlag = false;
-		Sound.setVolume(5); // Damit es nicht so laut Piept.
+		//Sound.setVolume(5); // Damit es nicht so laut Piept.
 		long startTime = System.currentTimeMillis();
 		long elapsedTime = 0L;
 
@@ -40,22 +42,22 @@ public class BrachialbiberMain {
 			if (biber.lineFollower.isBlue()) {
 				++blueCount;
 				elapsedTime = (new Date()).getTime() - startTime;
-				if (blueCount >= 10 && !blueFlag && elapsedTime >= (3 * 1000)) {
+				if (blueCount >= 5 && !blueFlag && elapsedTime >= (3 * 1000)) {
 					System.out.println(elapsedTime);
 					Sound.beep();
 					blueFlag = true;
 					blueCount = 0;
 					biber.gyCo.setGyroKP(4.0); // davor auf 0...
-					biber.lineFollower.setKP(1.0);
+					//biber.lineFollower.setKP(1.0);
 					startTime=System.currentTimeMillis();
-				} else if (blueCount >= 10 && blueFlag
+				} else if (blueCount >= 5 && blueFlag
 						&& elapsedTime >= (3 * 1000)) {
 					Sound.beep();
 					blueCount = 0;
 					blueFlag = false;
 					startTime=System.currentTimeMillis();
 					biber.gyCo.setGyroKP(0); // davor auf 0...
-					biber.lineFollower.setKP(5.2);
+					//biber.lineFollower.setKP(5.2);
 				}
 				if (blueCount == Integer.MAX_VALUE)
 					blueCount = 0; // Für den Notfall
