@@ -13,8 +13,8 @@ public class GyroController {
 	NXTMotor motor;
 
 	// Feste Werte des Controllers
-	private double Kp = 0; // ergibt sich empirisch, Verwendung in setMotion()!
-	private final double BLOCK_DOWN = 0.9; // -0.9
+	private double Kp = 3.9; // ergibt sich empirisch, Verwendung in setMotion()!
+	private final double BLOCK_DOWN = 1; // -0.9
 	private double newPower = 0; // from setMotion
 	private double angleVelocity = 0.0;
 	private double sumPower = 0.0;
@@ -33,7 +33,7 @@ public class GyroController {
 		motor = nxtMotor;
 		provider = sensor.getRateMode();
 		write = new WriteFile();
-		setGyroKP(0); //Wird ab blau auf 4.0 gesetzt, siehe main
+		setGyroKP(3.9); //Wird ab blau auf 4.0 gesetzt, siehe main
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class GyroController {
 	 */
 	public void setMotion() {
 		angleVelocity = (double) getAngleVelocity(); // Über wie viel gemittelt wird;
-		write.writeToFile(angleVelocity); // Log angleVelocity
+		//write.writeToFile(angleVelocity); // Log angleVelocity
 		// Calculate Power
 		newPower = (Kp * angleVelocity);
 		newPower = (-1) * Math.signum(newPower)* Math.min(Math.abs(newPower), 100);

@@ -37,10 +37,10 @@ public class BrachialbiberMain {
 
 		while (Button.ESCAPE.isUp()) {
 			// TODO Werte von Klassen abgreifen, um nicht jedesmal hier hardcoden zu müssen.
-			if (biber.lineFollower.isBlue()) {
+			if (false) { // biber.lineFollower.isBlue()
 				++blueCount;
 				elapsedTime = (new Date()).getTime() - startTime;
-				if (blueCount >= 2 && !blueFlag && elapsedTime >= (3 * 1000)) {
+				if (blueCount >= 1 && !blueFlag && elapsedTime >= (3 * 1000)) {
 					System.out.println(elapsedTime);
 					Sound.beep();
 					blueFlag = true;
@@ -48,7 +48,7 @@ public class BrachialbiberMain {
 					biber.gyCo.setGyroKP(3.8); // davor auf 0...
 					biber.lineFollower.setKP(2.0); // KP auf dem Hügel runter setzen!
 					startTime = System.currentTimeMillis();
-				} else if (blueCount >= 2  && blueFlag
+				} else if (blueCount >= 1  && blueFlag
 						&& elapsedTime >= (3 * 1000)) {
 					Sound.beep();
 					blueCount = 0;
