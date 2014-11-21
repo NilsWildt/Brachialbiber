@@ -48,7 +48,7 @@ public class BrachialbiberMain {
 					blueFlag = true;
 					blueCount = 0;
 					biber.gyCo.setGyroKP(4.0); // davor auf 0...
-					//biber.lineFollower.setKP(1.0);
+					biber.lineFollower.setKP(4.0);
 					startTime=System.currentTimeMillis();
 				} else if (blueCount >= 5 && blueFlag
 						&& elapsedTime >= (3 * 1000)) {
@@ -57,12 +57,11 @@ public class BrachialbiberMain {
 					blueFlag = false;
 					startTime=System.currentTimeMillis();
 					biber.gyCo.setGyroKP(0); // davor auf 0...
-					//biber.lineFollower.setKP(5.2);
+					biber.lineFollower.setKP(5.2);
 				}
 				if (blueCount == Integer.MAX_VALUE)
 					blueCount = 0; // Für den Notfall
 			}
-
 			biber.lineFollower.drive();
 			biber.gyCo.setMotion();
 		}
