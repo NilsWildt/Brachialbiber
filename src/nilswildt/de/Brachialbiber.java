@@ -6,6 +6,7 @@ import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.hardware.sensor.EV3TouchSensor;
 
 public class Brachialbiber {
 	protected EV3ColorSensor colSensor;
@@ -15,6 +16,7 @@ public class Brachialbiber {
 	protected LineFollower lineFollower;
 	private EV3LargeRegulatedMotor leftMotor;
 	private EV3LargeRegulatedMotor rightMotor;
+	private EV3TouchSensor touchSensor;
 
 	private static int SCREENWIDTH = 17;
 	private static int SCREENHIGHT = 7;
@@ -27,15 +29,17 @@ public class Brachialbiber {
 	 * @param b
 	 * @param gyroSenPort
 	 */
-	public Brachialbiber(Port colSensPort, Port gyroSensPort, Port NXTSensPort,
+	public Brachialbiber(Port colSensPort, Port gyroSensPort, Port touchSensorPort ,Port NXTSensPort,
 			Port leftMotorPort, Port rightMotorPort) {
 		colSensor = new EV3ColorSensor(colSensPort);
 		gyro = new EV3GyroSensor(gyroSensPort);
+		touchSensor = new EV3TouchSensor(touchSensorPort);
 		eiMotor = new NXTMotor(NXTSensPort);
-		gyCo = new GyroController(gyro, eiMotor);
+		gyCo = new GyroController(gyro, touchSensor, eiMotor);
 		leftMotor = new EV3LargeRegulatedMotor(leftMotorPort);
 		rightMotor = new EV3LargeRegulatedMotor(rightMotorPort);
-		lineFollower = new LineFollower(colSensor, leftMotor, rightMotor);
+		lineFollower = new LineFollower(colSensor, touchSensor, leftMotor, rightMotor);
+		//System.out.println(Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/4.0f);
 	}
 
 	/**
@@ -67,7 +71,7 @@ public class Brachialbiber {
 			Xpos = 0;
 		}
 	}
-
+	
 	public static void printer(String text) {
 		String[] output = text.split(" ");
 		int n = output.length;
