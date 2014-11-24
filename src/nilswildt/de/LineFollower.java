@@ -20,7 +20,7 @@ public class LineFollower {
 	
 	private float[] sample;
 	private float[] isTouched;
-	private SampleProvider rgbMode;
+	private SampleProvider redMode;
 	private SampleProvider average;
 	private float speed;
 	private double brightValue; // Höchster Helligkeitswert
@@ -38,6 +38,9 @@ public class LineFollower {
 	private double KP;
 	private double KI;
 	private double KD;
+	private double maxError;
+	private double errorChange;
+	private double errorShift;
 	
 	private double speedLeft;
 	private double speedRight;
@@ -54,12 +57,15 @@ public class LineFollower {
 		this.touchSensor = touchSensor;
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
-		rgbMode = this.sensor.getRGBMode();
-		speed = 150.0f;// Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration // 
-		KP = 3.2;// 0.6*KC = 3.0; //5.2		+		KP = 3.2;// 0.6*KC = 3.0; //5.2
-		KI = 0.00;// 0.396;//2.0*KP*dT/PC = 0.184685;		+		KI = 0.00;// 0.396;//2.0*KP*dT/PC = 0.184685;
+		redMode = this.sensor.getRedMode();
+		speed = 350.0f;// Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration // 
+		KP = 3.8;// 0.6*KC = 3.0; //5.2		+		KP = 3.2;// 0.6*KC = 3.0; //5.2
+		KI = 0.0;// 0.396;//2.0*KP*dT/PC = 0.184685;		+		KI = 0.00;// 0.396;//2.0*KP*dT/PC = 0.184685;
 		KD = 10.0;// KP*PC/(8.0*dT) = 12.1829;		+		KD = 10.0;// KP*PC/(8.0*dT) = 12.1829;
-		sample = new float[4]; // rgb,intensity at [3]
+		maxError = 1.0;
+		errorChange = 1.0;
+		errorShift = 1.0;		
+		sample = new float[1]; // rgb,intensity at [3]
 		isTouched = new float[1];
 		integral = 0.0;
 		derivative = 0.0;
@@ -72,14 +78,14 @@ public class LineFollower {
 		
 		LCD.drawString("Calibrate Brigth-Value: (Press ENTER-Button)",0,0);
 		do{
-			brightValue = (double) fetchAverageSample()[3];
+			brightValue = (double) fetchAverageSample();
 			touchSensor.fetchSample(isTouched, 0);
 		}while(isTouched[0] != 1f);
 		Delay.msDelay(500);
 		LCD.clear();
 		LCD.drawString("Calibrate Dark-Value: (Press ENTER-Button)",0,0);
 		do{
-			darkValue = (double) fetchAverageSample()[3];
+			darkValue = (double) fetchAverageSample();
 			touchSensor.fetchSample(isTouched, 0);
 		}while(isTouched[0] != 1f);
 		Delay.msDelay(500);
@@ -91,7 +97,7 @@ public class LineFollower {
 		LCD.clear();
 		do{
 			touchSensor.fetchSample(isTouched, 0);
-			value = Math.round((fetchAverageSample()[3] - midValue)*100.0)/100.0;
+			value = fetchAverageSample() - midValue;//Math.round((fetchAverageSample() - midValue)*100.0)/100.0;
 			System.out.println(value);
 		}while(isTouched[0] != 1f);
 		
@@ -117,11 +123,11 @@ public class LineFollower {
 	}
 	
 	public void drive() {
-		currentValue = fetchAverageSample()[3];
+		currentValue = fetchAverageSample();
 		
 		//P-Part
 		error = midValue - currentValue;
-		error = Math.signum(error)*1.33*range/(1+Math.pow(Math.E, -0.03*1.08*range*(Math.abs(error) - 1.35*range/2.0)));
+		error = Math.signum(error)*maxError*range/(1+Math.pow(Math.E, -0.03*errorChange*range*(Math.abs(error) - errorShift*range/2.0)));
 		
 		//I-Part
 		//if(Math.signum(error) != Math.signum(integral)) integral = 0.0;
@@ -143,33 +149,17 @@ public class LineFollower {
 
 	}
 	
-	public float[] fetchSample(){
-		rgbMode.fetchSample(sample, 0);
-		for (int i=0; i<sample.length-1; i++) {
-			sample[i] = sample[i] * 100f;
-		}
-		
-		sample[3] = (float) Math.sqrt((Math.pow(sample[0], 2)
-				+ Math.pow(sample[1], 2) + Math.pow(2*sample[2], 2)));
-		return sample;
+	public float fetchSample(){
+		redMode.fetchSample(sample, 0);
+		sample[0] *= 100f;
+		return sample[0];
 	}	
 	
-	public float[] fetchAverageSample(){
-		average = new MeanFilter(rgbMode, 5);
+	public float fetchAverageSample(){
+		average = new MeanFilter(redMode, 5);
 		average.fetchSample(sample, 0);
-		for (int i=0; i<sample.length-1; i++) {
-			sample[i] = sample[i] * 100f;
-		}
-		
-		sample[3] = (float) Math.sqrt((Math.pow(sample[0], 2)
-				+ Math.pow(sample[1], 2) + Math.pow(2*sample[2], 2))); // TODO ÜBERARBEITEN
-		return sample;
-	}
-	
-	public boolean isBlue(){
-		sample = fetchAverageSample();
-		if(sample[0] < sample[2]*1.25f) return true;
-		return false;
+		sample[0] *= 100f;
+		return sample[0];
 	}
 	
 	public double getKP(){
