@@ -31,9 +31,6 @@ public class LineFollower {
 	private double error;
 	private double turn;
 	
-	private final double KC = 5.0;
-	private final double PC = 0.66275; //Periodendauer
-	private final double dT = 0.0204; //Durchlauf 
 	
 	private double KP;
 	private double KI;
@@ -49,7 +46,6 @@ public class LineFollower {
 	private double derivative;
 	private double lastError;
 	
-	double KK = 1.1;
 	
 	public LineFollower(EV3ColorSensor sensor, EV3TouchSensor touchSensor,
 			EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor){
