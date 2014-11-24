@@ -12,16 +12,18 @@ import lejos.utility.Delay;
 
 public class BrachialbiberMain {
 	public static void main(String[] args) {
-
-		Brachialbiber biber = new Brachialbiber(SensorPort.S1, SensorPort.S2,
+		Brachialbiber biber = new Brachialbiber(SensorPort.S1, SensorPort.S2, SensorPort.S3,
 				MotorPort.B, MotorPort.A, MotorPort.D);
-		Brachialbiber.printer("Press enter to continue");
-		Button.waitForAnyPress();
+		
+		LineFollower follower = biber.lineFollower;
+		GyroController controller = biber.gyCo;
+		
+		//Initialisierungen
 		Delay.msDelay(1000);
-		biber.gyCo.initalizeGyroController();
+		controller.initalizeGyroController();
 		Delay.msDelay(200);
-		biber.lineFollower.initFollower();
-		biber.lineFollower.initMotor();
+		follower.initFollower();
+		follower.initMotor();
 
 		LCD.clear();
 		// -------------------------------------------------------------
@@ -36,8 +38,11 @@ public class BrachialbiberMain {
 		long elapsedTime = 0L;
 
 		while (Button.ESCAPE.isUp()) {
-			// TODO Werte von Klassen abgreifen, um nicht jedesmal hier hardcoden zu müssen.
-			if (false) { // biber.lineFollower.isBlue()
+			// TODO Werte von Klassen abgreifen, um nicht jedesmal hier hardcoden zu mÃ¼ssen.
+			follower.drive();
+			//controller.setMotion();
+			
+			/*if (false) { // biber.lineFollower.isBlue()
 				++blueCount;
 				elapsedTime = (new Date()).getTime() - startTime;
 				if (blueCount >= 1 && !blueFlag && elapsedTime >= (3 * 1000)) {
@@ -46,7 +51,7 @@ public class BrachialbiberMain {
 					blueFlag = true;
 					blueCount = 0;
 					biber.gyCo.setGyroKP(3.8); // davor auf 0...
-					biber.lineFollower.setKP(2.0); // KP auf dem Hügel runter setzen!
+					biber.lineFollower.setKP(2.0); // KP auf dem HÃ¼gel runter setzen!
 					startTime = System.currentTimeMillis();
 				} else if (blueCount >= 1  && blueFlag
 						&& elapsedTime >= (3 * 1000)) {
@@ -57,9 +62,7 @@ public class BrachialbiberMain {
 					biber.gyCo.setGyroKP(0); // davor auf 0...
 					biber.lineFollower.setKP(5.2);
 				}
-			}
-			biber.lineFollower.drive();
-			biber.gyCo.setMotion();
+				*/
 		}
 		System.exit(0);
 		// Play Music and stop!
