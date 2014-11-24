@@ -1,3 +1,13 @@
+package nilswildt.de;
+
+import java.io.IOException;
+
+import lejos.hardware.lcd.LCD;
+import lejos.hardware.motor.NXTMotor;
+import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.hardware.sensor.EV3TouchSensor;
+import lejos.robotics.SampleProvider;
+import lejos.utility.Delay;
 
 public class GyroController {
 	EV3GyroSensor sensor;
