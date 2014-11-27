@@ -3,6 +3,7 @@ package nilswildt.de;
 import lejos.hardware.Button;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.robotics.SampleProvider;
@@ -20,7 +21,7 @@ public class LineFollower {
 	
 	private float[] sample;
 	private float[] isTouched;
-	private SampleProvider redMode;
+	private SampleProvider rgbMode;
 	private SampleProvider average;
 	private float speed;
 	private double brightValue; // Höchster Helligkeitswert
@@ -31,6 +32,9 @@ public class LineFollower {
 	private double error;
 	private double turn;
 	
+	private final double KC = 5.0;
+	private final double PC = 0.66275; //Periodendauer
+	private final double dT = 0.0204; //Durchlauf 
 	
 	private double KP;
 	private double KI;
@@ -46,6 +50,7 @@ public class LineFollower {
 	private double derivative;
 	private double lastError;
 	
+	double KK = 1.1;
 	
 	public LineFollower(EV3ColorSensor sensor, EV3TouchSensor touchSensor,
 			EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor){
@@ -53,15 +58,18 @@ public class LineFollower {
 		this.touchSensor = touchSensor;
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
-		redMode = this.sensor.getRedMode();
-		speed = 350.0f;// Math.max(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed())/3.0f; // Acceleration // 
-		KP = 3.8;// 0.6*KC = 3.0; //5.2		+		KP = 3.2;// 0.6*KC = 3.0; //5.2
-		KI = 0.0;// 0.396;//2.0*KP*dT/PC = 0.184685;		+		KI = 0.00;// 0.396;//2.0*KP*dT/PC = 0.184685;
-		KD = 10.0;// KP*PC/(8.0*dT) = 12.1829;		+		KD = 10.0;// KP*PC/(8.0*dT) = 12.1829;
-		maxError = 1.0;
-		errorChange = 1.0;
+		rgbMode = this.sensor.getRGBMode();
+		sensor.setFloodlight(true);
+		speed = 350.0f;
+		leftMotor.setAcceleration(100);
+		rightMotor.setAcceleration(100);
+		KP = 5.1;//5.0;
+		KI = 0.011;//0.02;
+		KD = 21.0;//8.0;
+		maxError = 1.2;
+		errorChange = -0.03 * 0.1;	
 		errorShift = 1.0;		
-		sample = new float[1]; // rgb,intensity at [3]
+		sample = new float[4]; // rgb,intensity at [3]
 		isTouched = new float[1];
 		integral = 0.0;
 		derivative = 0.0;
@@ -94,7 +102,7 @@ public class LineFollower {
 		do{
 			touchSensor.fetchSample(isTouched, 0);
 			value = fetchAverageSample() - midValue;//Math.round((fetchAverageSample() - midValue)*100.0)/100.0;
-			System.out.println(value);
+			System.out.println(Math.round(value*100.0)/100.0);
 		}while(isTouched[0] != 1f);
 		
 		range = Math.abs(brightValue - darkValue)/2.0;
@@ -123,13 +131,15 @@ public class LineFollower {
 		
 		//P-Part
 		error = midValue - currentValue;
-		error = Math.signum(error)*maxError*range/(1+Math.pow(Math.E, -0.03*errorChange*range*(Math.abs(error) - errorShift*range/2.0)));
+		//KP = Math.max(1.0, Math.abs(error)/range*10.0);
+		//error = Math.signum(error)*maxError*range/(1+Math.pow(Math.E, errorChange*range*(Math.abs(error) - errorShift*range/2.0)));
 		
 		//I-Part
-		//if(Math.signum(error) != Math.signum(integral)) integral = 0.0;
-		integral = (2.0/3.0)*integral + error; //(2.0/3.0)*
+		if(Math.signum(error) != Math.signum(integral)) integral = 0.0;
+		integral = 0.8*integral + error; //(2.0/3.0)*
 		
 		//D-Part
+		//KD = 20.0/Math.pow(Math.E, 0.1*Math.abs(error));
 		derivative = error - lastError;
 		
 		turn = KP * error + KI * integral + KD * derivative;
@@ -142,20 +152,24 @@ public class LineFollower {
 		
 		lastError = error;
 		LCD.clear();
-
+//		Delay.msDelay(5);
 	}
 	
 	public float fetchSample(){
-		redMode.fetchSample(sample, 0);
-		sample[0] *= 100f;
-		return sample[0];
+		rgbMode.fetchSample(sample, 0);
+		for(int i=0; i<3; i++)
+			sample[i] *= 100f;
+		sample[3] = (float) Math.sqrt(Math.pow(sample[0], 2) + Math.pow(sample[1], 2) + Math.pow(2.0*sample[2], 2));
+		return sample[3];
 	}	
 	
 	public float fetchAverageSample(){
-		average = new MeanFilter(redMode, 5);
+		average = new MeanFilter(rgbMode, 5);
 		average.fetchSample(sample, 0);
-		sample[0] *= 100f;
-		return sample[0];
+		for(int i=0; i<3; i++)
+			sample[i] *= 100f;
+		sample[3] = (float) Math.sqrt(Math.pow(sample[0], 2) + Math.pow(sample[1], 2) + Math.pow(2.0*sample[2], 2));
+		return sample[3];
 	}
 	
 	public double getKP(){
@@ -190,5 +204,4 @@ public class LineFollower {
 		leftMotor.flt();
 		rightMotor.flt();
 	}
-	
 }
