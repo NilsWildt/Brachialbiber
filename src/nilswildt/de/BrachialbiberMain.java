@@ -1,10 +1,6 @@
 package nilswildt.de;
 
-import java.io.File;
-import java.util.Date;
-
 import lejos.hardware.Button;
-import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
@@ -19,19 +15,17 @@ public class BrachialbiberMain {
 		GyroController controller = biber.gyCo;
 		
 		//Initialisierungen
-		//Delay.msDelay(1000);
-		//controller.initalizeGyroController();
+		Delay.msDelay(1000);
+		controller.initalizeGyroController();
 		Delay.msDelay(200);
 		follower.initFollower();
 		follower.initMotor();
-
 		LCD.clear();
 		// -------------------------------------------------------------
 
-		
 		while (Button.ESCAPE.isUp()) {
 			follower.drive();
-			//controller.setMotion();
+			controller.setMotion();
 		}
 		
 		/*

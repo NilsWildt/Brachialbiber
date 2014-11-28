@@ -2,6 +2,7 @@ package nilswildt.de;
 
 import java.io.IOException;
 
+import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.sensor.EV3GyroSensor;
@@ -45,6 +46,7 @@ public class GyroController {
 	 */
 	public void initalizeGyroController() {
 		Brachialbiber.printer("Press touch to continue");
+		Sound.beep();
 		do{
 			touch.fetchSample(isTouched, 0);
 		}while(isTouched[0] != 1f);
@@ -88,12 +90,13 @@ public class GyroController {
 		} else {
 			cnt = 0;
 		}
-		if (newPower > 0) {
-			newPower *= BLOCK_DOWN;
-		}
+	//	if (newPower > 0) {
+		//	newPower *= BLOCK_DOWN;
+	//	}
 		if (Math.abs(newPower) >= 30) {
 			if (newPower < 0.0) {
 				motor.backward();
+				sumPower *= BLOCK_DOWN;
 			} else {
 				motor.forward();
 			}
@@ -103,6 +106,7 @@ public class GyroController {
 			if (Math.abs(sumPower) >= 30) {
 				if (sumPower < 0.0) {
 					motor.backward();
+					sumPower *= BLOCK_DOWN;
 				} else {
 					motor.forward();
 				}
